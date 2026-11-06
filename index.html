@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TradeCard · Order update</title>
+<meta name="description" content="Live updates on order processing at TradeCard.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#3785FA;--navy:#0B1F4D;--lime:#CCFF00;--ink:#0B1F4D;--ink2:#3A4D75;--bg:#EEF4FF;--good:#13A36B;--warn:#FF8A1F}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px calc(32px + env(safe-area-inset-bottom))}
+.hero{position:relative;background:var(--blue);color:#fff;padding:calc(24px + env(safe-area-inset-top)) 16px 28px;border-bottom:4px solid var(--navy);overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.17) 1.6px,transparent 1.8px);background-size:22px 22px}
+.hin{position:relative;max-width:520px;margin:0 auto}
+.tag{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--navy);border:3px solid var(--navy);border-radius:10px;padding:3px 10px;font-weight:900;font-size:12px;letter-spacing:1.5px;box-shadow:3px 4px 0 var(--navy)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 0 rgba(255,138,31,.6);animation:p 1.6s infinite}
+.resolved .dot{background:var(--good);animation:none}
+@keyframes p{70%{box-shadow:0 0 0 7px rgba(255,138,31,0)}100%{box-shadow:0 0 0 0 rgba(255,138,31,0)}}
+h1{margin-top:14px;font-weight:900;font-size:clamp(30px,9.4vw,42px);line-height:1.02;letter-spacing:-1.2px;text-transform:uppercase}
+h1 span{color:var(--lime);text-shadow:4px 4px 0 var(--navy)}
+.lead{margin-top:12px;font-size:15.5px;font-weight:600;color:#EAF1FF;max-width:440px}
+.status{margin-top:16px;display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--navy);border-radius:999px;padding:6px 14px 6px 8px;font-weight:800;font-size:14px}
+.status i{flex:none;width:22px;height:22px;border-radius:50%;background:var(--warn);color:#fff;display:flex;align-items:center;justify-content:center}.status i svg{width:13px;height:13px}
+.resolved .status i{background:var(--good)}
+.upd{margin-top:8px;font-size:12.5px;font-weight:600;color:#E4EEFF}
+section{margin-top:26px}
+.eb{font-size:12px;font-weight:900;letter-spacing:1.8px;color:var(--blue)}
+h2{font-size:21px;font-weight:900;letter-spacing:-.4px;line-height:1.2;margin-top:4px}
+p.t{margin-top:8px;font-size:15px;font-weight:500;color:var(--ink2)}
+p.t b{color:var(--ink)}
+.choice{margin-top:12px;display:flex;flex-direction:column;gap:12px}
+.opt{background:#fff;border:3px solid var(--navy);border-radius:18px;padding:14px 16px;box-shadow:4px 5px 0 var(--navy)}
+.opt .h{display:flex;align-items:center;gap:10px}
+.opt .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--navy);color:var(--lime);font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center}
+.opt b{font-size:16.5px;font-weight:900;line-height:1.25}
+.opt p{margin-top:6px;font-size:14px;font-weight:500;color:var(--ink2)}
+.opt.alt{background:var(--lime)}
+.note{margin-top:12px;font-size:14px;font-weight:700;color:var(--navy);text-align:center}
+.safe{margin-top:26px;background:var(--navy);color:#fff;border-radius:18px;padding:16px;display:flex;gap:12px;align-items:flex-start}
+.safe i{flex:none;width:40px;height:40px;border-radius:12px;background:var(--lime);color:var(--navy);display:flex;align-items:center;justify-content:center}.safe i svg{width:22px;height:22px}
+.safe b{display:block;font-size:16px;font-weight:900}.safe span{display:block;font-size:14px;font-weight:500;color:#C9D6F2;margin-top:2px}
+.tl{list-style:none;margin-top:12px}
+.tl li{position:relative;display:flex;gap:14px;padding-bottom:18px}
+.tl li:not(:last-child):before{content:"";position:absolute;left:13px;top:30px;bottom:0;width:3px;background:#C7DAFB}
+.tl .d{flex:none;width:30px;height:30px;border-radius:50%;background:#fff;border:3px solid var(--blue);display:flex;align-items:center;justify-content:center}
+.tl .d:after{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue)}
+.tl li.issue .d{border-color:var(--warn)}.tl li.issue .d:after{background:var(--warn)}
+.tl li.fixed .d{border-color:var(--good);background:var(--good)}.tl li.fixed .d:after{background:#fff}
+.tl li:first-child .d{box-shadow:0 0 0 4px rgba(55,133,250,.18)}
+.tl small{display:block;font-size:12.5px;font-weight:800;color:var(--blue);letter-spacing:.2px}
+.tl b{display:block;font-size:15.5px;font-weight:800;line-height:1.3}
+.tl span{display:block;font-size:14px;font-weight:500;color:var(--ink2);margin-top:2px}
+.tl .new{display:inline-block;margin-left:6px;background:var(--lime);color:var(--navy);border:2px solid var(--navy);border-radius:6px;padding:0 5px;font-size:10.5px;font-weight:900;letter-spacing:.8px;vertical-align:2px}
+.faq{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+details{background:#fff;border:3px solid var(--navy);border-radius:16px;box-shadow:4px 5px 0 var(--navy)}
+summary{list-style:none;cursor:pointer;padding:13px 44px 13px 14px;font-size:15px;font-weight:800;position:relative}
+summary::-webkit-details-marker{display:none}
+summary:after{content:"+";position:absolute;right:14px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-weight:900;font-size:17px;line-height:24px;text-align:center}
+details[open] summary:after{content:"–"}
+details p{padding:0 14px 14px;font-size:14px;font-weight:500;color:var(--ink2)}
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;background:var(--lime);color:var(--navy);border:3px solid var(--navy);border-radius:999px;padding:14px 18px;font-weight:900;font-size:16px;text-decoration:none;box-shadow:4px 5px 0 var(--navy)}
+.cta:active{transform:translate(3px,4px);box-shadow:1px 1px 0 var(--navy)}
+.thanks{margin-top:26px;background:#fff;border-left:6px solid var(--blue);border-radius:14px;padding:14px 16px}
+.thanks b{font-size:16px;font-weight:900}.thanks p{margin-top:4px;font-size:14px;font-weight:500;color:var(--ink2)}
+footer{margin-top:26px;text-align:center;font-size:12px;font-weight:600;color:#7C8BAA}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header class="hero" id="hero"><div class="hin">
+  <span class="tag"><span class="dot"></span><span id="tagTxt">LIVE UPDATE</span></span>
+  <h1 id="h1"></h1>
+  <p class="lead" id="lead"></p>
+  <div class="status"><i id="stIcon"></i><span id="stTxt"></span></div>
+  <p class="upd" id="upd"></p>
+</div></header>
+
+<main class="wrap">
+
+  <!-- ============ ONGOING ============ -->
+  <div id="ongoing">
+    <section>
+      <div class="eb">WHAT'S HAPPENING</div>
+      <h2>A network issue is slowing down orders</h2>
+      <p class="t">Since <b id="since"></b>, a network issue has been slowing down how fast we process orders. You can still submit cards, but <b>your orders may take longer than usual to complete</b>.</p>
+      <p class="t">Our team is working round the clock to fix it. We'll post every update on this page.</p>
+    </section>
+
+    <section>
+      <div class="eb">YOUR MONEY, YOUR CHOICE</div>
+      <h2>Choose what works for you</h2>
+      <p class="t">We don't want you waiting on your money without knowing why. So here are your options:</p>
+      <div class="choice">
+        <div class="opt"><div class="h"><div class="n">1</div><b>Trade now</b></div><p>Submit your card as usual. Your order is received and will be processed, but it may take longer than normal.</p></div>
+        <div class="opt alt"><div class="h"><div class="n">2</div><b>Keep your card and trade later</b></div><p>Hold on to your card and come back once we confirm on this page that orders are back to normal speed.</p></div>
+      </div>
+      <p class="note">Whatever suits you best. We value your convenience.</p>
+    </section>
+
+    <div class="safe"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></i><div><b>Your submitted orders are safe</b><span>Orders already submitted stay in the queue and will be processed. Please don't submit the same card again.</span></div></div>
+  </div>
+
+  <!-- ============ RESOLVED ============ -->
+  <div id="resolvedBox" hidden>
+    <section>
+      <div class="eb">ALL CLEAR</div>
+      <h2>Orders are processing at normal speed</h2>
+      <p class="t" id="resText"></p>
+      <p class="t">If you kept your cards to trade later, now is a good time to trade.</p>
+    </section>
+    <div class="safe"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></i><div><b>Orders placed during the delay</b><span>These are being completed. Check your History. If an order still shows as pending, chat with support in the app and share your order ID.</span></div></div>
+    <a class="cta" id="ctaBtn" href="#">Trade now <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+
+  <section>
+    <div class="eb">UPDATES</div>
+    <h2>Latest first</h2>
+    <ol class="tl" id="tl"></ol>
+  </section>
+
+  <section>
+    <div class="eb">QUESTIONS</div>
+    <h2>What you may be wondering</h2>
+    <div class="faq" id="faq"></div>
+  </section>
+
+  <div class="thanks"><b id="thxH"></b><p id="thxP"></p></div>
+  <footer>© TradeCard · Order update</footer>
+</main>
+
+<script>
+/* ======================= EDIT THIS BLOCK ONLY =======================
+   status  : "ongoing" while the issue is live, "resolved" once fixed
+   since   : when the delay started (shown on the page)
+   resolved: when it was fixed (used only when status = "resolved")
+   updated : when you last edited this page
+   tradeUrl: deep link for the "Trade now" button (resolved state)
+   updates : newest FIRST. type: "issue" | "progress" | "fixed"
+             Add a new line at the top each time you post an update.  */
+var CONFIG = {
+  status:   "ongoing",
+  since:    "7 Nov, 10:00 AM WAT",
+  resolved: "",
+  updated:  "7 Nov 2026, 12:00 PM WAT",
+  tradeUrl: "#",
+  updates: [
+    { time: "7 Nov · 12:00 PM WAT", type: "progress", title: "Our team is working on the fix",
+      text: "Engineers are working round the clock on the network issue. Orders are still being received and processed, but slower than usual." },
+    { time: "7 Nov · 10:00 AM WAT", type: "issue", title: "Orders are slower than usual",
+      text: "A network issue started slowing down order processing." }
+  ]
+};
+/* ==================================================================== */
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var done = CONFIG.status === "resolved";
+  var tick='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var wrench='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>';
+
+  if(done){
+    $('hero').classList.add('resolved');
+    $('tagTxt').textContent='RESOLVED';
+    $('h1').innerHTML='Orders are back<br><span>to normal</span>';
+    $('lead').textContent='The network issue is fixed. Thank you for your patience.';
+    $('stIcon').innerHTML=tick; $('stTxt').textContent='Resolved';
+    $('ongoing').hidden=true; $('resolvedBox').hidden=false;
+    $('resText').innerHTML='The network issue that slowed down orders was fixed'+(CONFIG.resolved?' on <b>'+CONFIG.resolved+'</b>':'')+'. New orders are now processed at our usual speed.';
+    $('ctaBtn').href=CONFIG.tradeUrl;
+    $('thxH').textContent='Thank you for sticking with us';
+    $('thxP').textContent='We know waiting for your money is stressful, and we’re sorry for the delay. Thank you for trading with TradeCard.';
+  } else {
+    $('h1').innerHTML='Orders are slower<br><span>than usual</span>';
+    $('lead').textContent='We’re working round the clock to fix it, and we’ll keep you updated right here.';
+    $('stIcon').innerHTML=wrench; $('stTxt').textContent='In progress · fix underway';
+    $('since').textContent=CONFIG.since;
+    $('thxH').textContent='We’re sorry for the wait';
+    $('thxP').textContent='We know your money matters, and we don’t want you left waiting without answers. Thank you for your patience while we fix this.';
+  }
+  $('upd').textContent='Last updated: '+CONFIG.updated;
+
+  $('tl').innerHTML=CONFIG.updates.map(function(u,i){
+    return '<li class="'+u.type+'"><div class="d"></div><div><small>'+u.time+(i===0?'<span class="new">LATEST</span>':'')+'</small><b>'+u.title+'</b><span>'+u.text+'</span></div></li>';
+  }).join('');
+
+  var faq = done ? [
+    ["Was any money lost?","No. Orders submitted during the delay are being completed. If anything looks wrong on your account, chat with support in the app and share your order ID."],
+    ["My order still shows as pending. What should I do?","Some orders from the delay may still be finishing. If yours is still pending, chat with support in the app with your order ID and we'll check it right away."],
+    ["Can I trade normally now?","Yes. Orders are processing at our usual speed again."]
+  ] : [
+    ["Is my money safe?","Yes. Orders you've already submitted stay in the queue and will be processed. The issue is affecting speed only."],
+    ["How long will it take?","We can't give an exact time yet. We're working round the clock and will post every update on this page, so check back here."],
+    ["Should I submit my card again?","No. Please don't submit the same card twice. Your first order is already in the queue, and a second submission can slow things down further."],
+    ["Can I still trade?","Yes. You can trade now and accept that it may take longer, or keep your card and trade later. It's your choice."],
+    ["How will I know it's fixed?","We'll update this page, the banner in the app and send a notification once orders are back to normal."],
+    ["I still need help.","Chat with our support team in the app. Have your order ID ready so we can help faster."]
+  ];
+  $('faq').innerHTML=faq.map(function(q){return '<details><summary>'+q[0]+'</summary><p>'+q[1]+'</p></details>'}).join('');
+})();
+</script>
+</body>
+</html>
